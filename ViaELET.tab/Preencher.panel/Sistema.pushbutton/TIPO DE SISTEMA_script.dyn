@@ -158,6 +158,15 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "63f25714b88c4ad683604d77d7b1fbba",
+          "Name": "item1",
+          "Description": "Índice do Item nº 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -294,38 +303,6 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "#TEMPLATE Python Script by BIM Coder\r\n#Versão 1.0 - 08/24\r\n\r\n#---IMPORTAÇÕES\r\n# Sistema e .NET\r\nimport clr\r\nimport sys\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\n# Biblioteca de Geometria do Dynamo\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# Nós do Dynamo\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Documentos e Transações\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# DB da API do Revit\r\nimport Autodesk\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Interface do usuário da API do Revit\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nfrom Autodesk.Revit.UI.Selection import ObjectType\r\n\r\n# Documentos e Interfaces\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n#---CLASSES E FUNÇÕES\r\n\r\n#---SCRIPT\r\n\r\n# Solicitar ao usuário que selecione múltiplos objetos do tipo Element (por exemplo, paredes, janelas, etc.)\r\n\r\nselected_references = uidoc.Selection.PickObjects(ObjectType.Element)\r\n\r\n# Obter os elementos a partir das referências\r\nselected_elements = [uidoc.Document.GetElement(reference) for reference in selected_references]\r\n\r\n# Saída para o Dynamo (lista de elementos Revit)\r\nOUT = selected_elements\r\n\r\n\r\n",
-      "Engine": "IronPython2",
-      "VariableInputPorts": true,
-      "Id": "1804c1ab9eb44617b7e31e9346c64cf8",
-      "Inputs": [
-        {
-          "Id": "d718b7b6ea7d40afb9a324d24c8530ac",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "badef45b55b74bb6bd320f2129df1acd",
-          "Name": "OUT",
-          "Description": "Resultado do script Python",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
-    },
-    {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('System.Windows.Forms')\r\nclr.AddReference('System.Drawing')\r\n\r\nfrom System.Windows.Forms import Application, Form, Label, TextBox, Button, FormStartPosition\r\nfrom System.Drawing import Point, Size, Color\r\n\r\nclass MyForm(Form):\r\n    def __init__(self, theme='Dark'):\r\n        # Configurações do Formulário\r\n        self.Text = \"Parâmetro ORÇAMENTO TIPO DE SISTEMA\"\r\n        self.Size = Size(300, 320)\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.ShowIcon = False\r\n        self.MaximizeBox = False\r\n        self.MinimizeBox = False\r\n\r\n        # Configuração do tema\r\n        if theme == 'Light':\r\n            self.BackColor = Color.White\r\n            self.ForeColor = Color.Black\r\n        else:\r\n            self.BackColor = Color.FromArgb(45, 45, 48)  # Dark theme\r\n            self.ForeColor = Color.White\r\n\r\n        # Criar a label de erro\r\n        self.error_label = Label()\r\n        self.error_label.ForeColor = Color.Red\r\n        self.error_label.Location = Point(20, 250)\r\n        self.error_label.Size = Size(300, 30)\r\n        self.Controls.Add(self.error_label)\r\n\r\n        self.create_form()\r\n        self.create_ok_button()\r\n\r\n    def create_form(self):\r\n        \"\"\"Cria a Label com as opções e o campo de entrada de texto.\"\"\"\r\n        lbl_options = Label()\r\n        lbl_options.Text = \"\\nEscolha uma opção:\\n\\n1 - AUTOMACAO\\n2 - CFTV\\n3 - ELETRICO\\n4 - INCENDIO\\n5 - LUMINOTECNICO\\n6 - CABEAMENTO ESTRUTURADO\\n7 - SPDA\\n8 - SDAI\"\r\n        lbl_options.Location = Point(20, 20)\r\n        lbl_options.Size = Size(300, 120)\r\n        lbl_options.AutoSize = True\r\n        self.Controls.Add(lbl_options)\r\n\r\n        self.txt_input = TextBox()\r\n        self.txt_input.Location = Point(20, 170)\r\n        self.txt_input.Size = Size(240, 30)\r\n        self.Controls.Add(self.txt_input)\r\n\r\n    def create_ok_button(self):\r\n        \"\"\"Cria o botão OK para capturar o texto e fechar o formulário.\"\"\"\r\n        btn_ok = Button()\r\n        btn_ok.Text = \"OK\"\r\n        btn_ok.Location = Point((self.ClientSize.Width - 100) // 2, 210)\r\n        btn_ok.Size = Size(100, 30)\r\n        btn_ok.Click += self.on_ok\r\n        self.Controls.Add(btn_ok)\r\n\r\n    def on_ok(self, sender, event):\r\n        \"\"\"Captura o texto digitado e fecha o formulário se for válido.\"\"\"\r\n        options = {\r\n            1: \"AUTOMACAO\",\r\n            2: \"CFTV\",\r\n            3: \"ELETRICO\",\r\n            4: \"INCENDIO\",\r\n            5: \"LUMINOTECNICO\",\r\n            6: \"CABEAMENTO ESTRUTURADO\",\r\n            7: \"SPDA\",\r\n            8: \"SDAI\"\r\n        }\r\n\r\n        try:\r\n            input_value = int(self.txt_input.Text)\r\n            if input_value in options:\r\n                self.user_input = options[input_value]\r\n                self.Close()  # Fecha o formulário apenas se o valor for válido\r\n            else:\r\n                self.show_error(\"Por favor, escolha uma opção válida (1-8).\")\r\n        except ValueError:\r\n            self.show_error(\"Por favor, insira um número válido.\")\r\n\r\n    def show_error(self, message):\r\n        \"\"\"Exibe uma mensagem de erro e não fecha o formulário.\"\"\"\r\n        self.error_label.Text = message\r\n\r\n# Criação do formulário\r\ntheme = \"Dark\"  # Você pode mudar para \"Light\" se quiser o tema claro\r\nform = MyForm(theme)\r\nApplication.Run(form)\r\n\r\n# O texto correspondente à opção escolhida será armazenado na variável 'form.user_input'\r\nOUT = form.user_input\r\n",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
@@ -354,19 +331,51 @@
       ],
       "Replication": "Disabled",
       "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "#TEMPLATE Python Script by BIM Coder\r\n#Versão 1.0 - 08/24\r\n\r\n#---IMPORTAÇÕES\r\n# Sistema e .NET\r\nimport clr\r\nimport sys\r\nimport System\r\nfrom System import Array\r\nfrom System.Collections.Generic import *\r\n\r\n# Biblioteca de Geometria do Dynamo\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# Nós do Dynamo\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\n# Documentos e Transações\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# DB da API do Revit\r\nimport Autodesk\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\n# Interface do usuário da API do Revit\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.UI import *\r\n\r\nfrom Autodesk.Revit.UI.Selection import ObjectType\r\n\r\n# Documentos e Interfaces\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nuidoc = uiapp.ActiveUIDocument\r\n\r\n#---CLASSES E FUNÇÕES\r\n\r\n#---SCRIPT\r\n\r\n# Solicitar ao usuário que selecione múltiplos objetos do tipo Element (por exemplo, paredes, janelas, etc.)\r\n\r\nselected_references = uidoc.Selection.PickObjects(ObjectType.Element)\r\n\r\n# Obter os elementos a partir das referências\r\nselected_elements = [uidoc.Document.GetElement(reference) for reference in selected_references]\r\n\r\n# Saída para o Dynamo (lista de elementos Revit)\r\nOUT = selected_elements\r\n\r\n\r\n",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "15a54a5fe4b14b16b3d946358ae2fbf2",
+      "Inputs": [
+        {
+          "Id": "4112abaf2c76432db54bf74b3a8c3727",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0e7ae48368c94edfbab8f18cfd167859",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
     }
   ],
   "Connectors": [
     {
       "Start": "4bff9b097fe342b28ceb5b64e6a74e97",
-      "End": "f985f7c0aea04532a77187aef1f57926",
-      "Id": "1d2f905a9c58420697450321c47582ba",
+      "End": "63f25714b88c4ad683604d77d7b1fbba",
+      "Id": "1c378c845a544fe6b0db9632cdf8c31c",
       "IsHidden": "False"
     },
     {
-      "Start": "4bff9b097fe342b28ceb5b64e6a74e97",
+      "Start": "859ba656cab84e78955ecb21f175d0b8",
       "End": "68ca7090cccb4d3ebed9727d176d718c",
-      "Id": "d0d90881fcfe4ce2aef94c473f908768",
+      "Id": "91efafe6169249e6b26701c30386c7dd",
       "IsHidden": "False"
     },
     {
@@ -394,15 +403,21 @@
       "IsHidden": "False"
     },
     {
-      "Start": "badef45b55b74bb6bd320f2129df1acd",
-      "End": "f078435f0a724f78b5c62291dd5d621b",
-      "Id": "1ae05de1424d4bde92d95a521997e9cd",
-      "IsHidden": "False"
-    },
-    {
       "Start": "069a965a3c8f464596f81fd01672f6dd",
       "End": "e32677c97c1c47e09f81e51f3f124f1b",
       "Id": "341f9392ba2746b1a0a4cd4cedc37d28",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "0e7ae48368c94edfbab8f18cfd167859",
+      "End": "f078435f0a724f78b5c62291dd5d621b",
+      "Id": "b273b5c27ef04fda8552d7926fba04fe",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "0e7ae48368c94edfbab8f18cfd167859",
+      "End": "f985f7c0aea04532a77187aef1f57926",
+      "Id": "7f8e7c488614468f8ae5c89e43facf4b",
       "IsHidden": "False"
     }
   ],
@@ -492,8 +507,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 16.469045808075293,
-        "Y": 295.68000522854692
+        "X": 24.653892779416196,
+        "Y": 496.20875602639995
       },
       {
         "Name": "List Create",
@@ -502,8 +517,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 423.40868809387712,
-        "Y": 158.75943672254414
+        "X": 410.85730460469381,
+        "Y": 92.864673404331882
       },
       {
         "Name": "List.Flatten",
@@ -536,16 +551,6 @@
         "Y": 274.25336995216759
       },
       {
-        "Name": "SELEÇÃO DOS ELEMENTOS",
-        "ShowGeometry": true,
-        "Id": "1804c1ab9eb44617b7e31e9346c64cf8",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -367.6079106509934,
-        "Y": 293.52441472020251
-      },
-      {
         "Name": "TEXTO",
         "ShowGeometry": true,
         "Id": "6936c60451c14912a6475a484b85913d",
@@ -554,11 +559,21 @@
         "Excluded": false,
         "X": 1480.703442446666,
         "Y": 541.422207362729
+      },
+      {
+        "Name": "SELEÇÃO DOS ELEMENTOS",
+        "ShowGeometry": true,
+        "Id": "15a54a5fe4b14b16b3d946358ae2fbf2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -441.243479588025,
+        "Y": 438.73473044344297
       }
     ],
     "Annotations": [],
-    "X": 310.25442449375441,
-    "Y": 191.76923841182031,
-    "Zoom": 0.24107763276848648
+    "X": 408.35417076314786,
+    "Y": 176.29209113126041,
+    "Zoom": 0.28495974778298733
   }
 }
