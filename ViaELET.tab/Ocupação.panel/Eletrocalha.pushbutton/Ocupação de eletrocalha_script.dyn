@@ -136,6 +136,70 @@
       ],
       "Replication": "Disabled",
       "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Importando as bibliotecas necessárias\r\nimport clr\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, ElementCategoryFilter\r\n\r\n# Obtendo o documento ativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Criando um coletor para filtrar elementos da categoria de bandejas de cabos\r\ncategoria_bandeja = BuiltInCategory.OST_CableTray\r\nfiltro_categoria = ElementCategoryFilter(categoria_bandeja)\r\ncolecao_elementos = FilteredElementCollector(doc).WherePasses(filtro_categoria).WhereElementIsNotElementType().ToElements()\r\n\r\n# Inicializando uma lista para armazenar as informações dos elementos e seus cálculos de área útil\r\nelementos_com_area_util = []\r\n\r\n# Iniciando uma transação para editar os parâmetros dos elementos\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Iterando sobre cada elemento para coletar, calcular e atualizar o parâmetro \"Área útil\"\r\nfor elemento in colecao_elementos:\r\n    # Procurando os parâmetros \"Largura\" e \"Altura\" diretamente\r\n    parametro_largura = elemento.LookupParameter(\"Largura\")\r\n    parametro_altura = elemento.LookupParameter(\"Altura\")\r\n    \r\n    if parametro_largura and parametro_altura:\r\n        # Convertendo os valores para float para cálculos\r\n        largura = float(parametro_largura.AsValueString())\r\n        altura = float(parametro_altura.AsValueString())\r\n        \r\n        # Calculando a \"Área útil\"\r\n        area_util = largura * altura * 0.2  # Multiplicando por 0,2 conforme instruído\r\n        \r\n        # Atribuindo o valor calculado ao parâmetro \"Área útil\"\r\n        parametro_area_util = elemento.LookupParameter(\"Área útil\")\r\n        if parametro_area_util:\r\n            parametro_area_util.Set(area_util)\r\n            elementos_com_area_util.append({\"Elemento\": elemento.Id.ToString(), \"Área útil\": area_util})  # Salvando o ID e área para referência\r\n\r\n# Finalizando a transação\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Saída para confirmar os elementos processados e seus valores de \"Área útil\"\r\nOUT = elementos_com_area_util\r\n",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "923e1837bd6c47a185d490e5d57c6eba",
+      "Inputs": [
+        {
+          "Id": "9a5d271dba2041a58a93b82ca25a957f",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ac9de69773ea4bb1b9b6f28646844f1e",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Importando as bibliotecas necessárias\r\nimport clr\r\nclr.AddReference(\"RevitServices\")\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference(\"RevitAPI\")\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, BuiltInCategory, ElementCategoryFilter\r\n\r\n# Obtendo o documento ativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Lista de tamanhos em ordem fixa, conforme solicitado\r\nordem_tamanhos = [\"1,5mm²\", \"2,5mm²\", \"4,0mm²\", \"6,0mm²\", \"10,0mm²\", \"16,0mm²\", \"25,0mm²\", \r\n                  \"35,0mm²\", \"50,0mm²\", \"70,0mm²\", \"95,0mm²\", \"120,0mm²\", \"150,0mm²\", \"185,0mm²\", \"240,0mm²\"]\r\n\r\n# Lista dos nomes dos parâmetros a serem verificados, organizados por tamanho, com constantes associadas diretamente\r\nparametros_por_tamanho = {\r\n    \"1,5mm²\": {\"parametros\": [\"1,5mm²_Fase A\", \"1,5mm²_Fase B\", \"1,5mm²_Fase C\", \"1,5mm²_Neutro\", \"1,5mm²_Retorno\", \"1,5mm²_Terra\"], \"constante\": 18.1},\r\n    \"2,5mm²\": {\"parametros\": [\"2,5mm²_Fase A\", \"2,5mm²_Fase B\", \"2,5mm²_Fase C\", \"2,5mm²_Neutro\", \"2,5mm²_Retorno\", \"2,5mm²_Terra\"], \"constante\": 32.17},\r\n    \"4,0mm²\": {\"parametros\": [\"4,0mm²_Fase A\", \"4,0mm²_Fase B\", \"4,0mm²_Fase C\", \"4,0mm²_Neutro\", \"4,0mm²_Retorno\", \"4,0mm²_Terra\"], \"constante\": 38.48},\r\n    \"6,0mm²\": {\"parametros\": [\"6,0mm²_Fase A\", \"6,0mm²_Fase B\", \"6,0mm²_Fase C\", \"6,0mm²_Neutro\", \"6,0mm²_Terra\"], \"constante\": 44.18},\r\n    \"10,0mm²\": {\"parametros\": [\"10,0mm²_Fase A\", \"10,0mm²_Fase B\", \"10,0mm²_Fase C\", \"10,0mm²_Neutro\", \"10,0mm²_Terra\"], \"constante\": 88.24},\r\n    \"16,0mm²\": {\"parametros\": [\"16,0mm²_Fase A\", \"16,0mm²_Fase B\", \"16,0mm²_Fase C\", \"16,0mm²_Neutro\", \"16,0mm²_Terra\"], \"constante\": 100.28},\r\n    \"25,0mm²\": {\"parametros\": [\"25,0mm²_Fase A\", \"25,0mm²_Fase B\", \"25,0mm²_Fase C\", \"25,0mm²_Neutro\", \"25,0mm²_Terra\"], \"constante\": 120.76},\r\n    \"35,0mm²\": {\"parametros\": [\"35,0mm²_Fase A\", \"35,0mm²_Fase B\", \"35,0mm²_Fase C\", \"35,0mm²_Neutro\", \"35,0mm²_Terra\"], \"constante\": 132.73},\r\n    \"50,0mm²\": {\"parametros\": [\"50,0mm²_Fase A\", \"50,0mm²_Fase B\", \"50,0mm²_Fase C\", \"50,0mm²_Neutro\", \"50,0mm²_Terra\"], \"constante\": 176.71},\r\n    \"70,0mm²\": {\"parametros\": [\"70,0mm²_Fase A\", \"70,0mm²_Fase B\", \"70,0mm²_Fase C\", \"70,0mm²_Neutro\", \"70,0mm²_Terra\"], \"constante\": 219.03},\r\n    \"95,0mm²\": {\"parametros\": [\"95,0mm²_Fase A\", \"95,0mm²_Fase B\", \"95,0mm²_Fase C\", \"95,0mm²_Neutro\", \"95,0mm²_Terra\"], \"constante\": 271.71},\r\n    \"120,0mm²\": {\"parametros\": [\"120,0mm²_Fase A\", \"120,0mm²_Fase B\", \"120,0mm²_Fase C\", \"120,0mm²_Neutro\", \"120,0mm²_Terra\"], \"constante\": 336.53},\r\n    \"150,0mm²\": {\"parametros\": [\"150,0mm²_Fase A\", \"150,0mm²_Fase B\", \"150,0mm²_Fase C\", \"150,0mm²_Neutro\", \"150,0mm²_Terra\"], \"constante\": 419.08},\r\n    \"185,0mm²\": {\"parametros\": [\"185,0mm²_Fase A\", \"185,0mm²_Fase B\", \"185,0mm²_Fase C\", \"185,0mm²_Neutro\", \"185,0mm²_Terra\"], \"constante\": 490.86},\r\n    \"240,0mm²\": {\"parametros\": [\"240,0mm²_Fase A\", \"240,0mm²_Fase B\", \"240,0mm²_Fase C\", \"240,0mm²_Neutro\", \"240,0mm²_Terra\"], \"constante\": 629}\r\n}\r\n\r\n# Coletando apenas os elementos da categoria Bandeja de Cabos\r\ncategoria_bandeja = BuiltInCategory.OST_CableTray\r\nfiltro_categoria = ElementCategoryFilter(categoria_bandeja)\r\ncolecao_elementos = FilteredElementCollector(doc).WherePasses(filtro_categoria).WhereElementIsNotElementType().ToElements()\r\n\r\n# Inicializando o contador para o parâmetro \"Trecho\"\r\ncontador_trecho = 1\r\n\r\n# Inicializando uma lista para armazenar os dados de cada elemento com a quantidade de cabos por grupo\r\nquantidade_por_elemento = []\r\n\r\n# Iniciando uma transação para editar os parâmetros dos elementos\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n# Iterando sobre cada elemento da categoria Bandeja de Cabos para verificar os parâmetros especificados e somar os valores por tamanho de cabo\r\nfor elemento in colecao_elementos:\r\n    soma_total_multiplicada = 0  # Inicializando a soma total dos valores multiplicados\r\n    quantidade_por_grupo = {}  # Dicionário para armazenar a quantidade de cabos por grupo com valores diferentes de zero, em ordem fixa\r\n    \r\n    # Iterar sobre cada grupo de tamanho de cabo, seguindo a ordem predefinida\r\n    for tamanho in ordem_tamanhos:\r\n        info = parametros_por_tamanho.get(tamanho, None)\r\n        if info:\r\n            parametros = info[\"parametros\"]\r\n            constante = info[\"constante\"]\r\n            soma_tamanho = 0  # Inicializando a soma para este tamanho de cabo\r\n\r\n            # Iterar sobre cada parâmetro dentro do tamanho\r\n            for nome_parametro in parametros:\r\n                parametro = elemento.LookupParameter(nome_parametro)\r\n                if parametro:\r\n                    valor_parametro = parametro.AsDouble() or parametro.AsInteger() or 0\r\n                    soma_tamanho += valor_parametro\r\n            \r\n            # Multiplicar a soma pela constante associada a esse tamanho de cabo\r\n            resultado_multiplicado = soma_tamanho * constante\r\n            soma_total_multiplicada += resultado_multiplicado\r\n\r\n            # Armazenar a quantidade calculada para o grupo atual no dicionário do elemento, somente se maior que zero\r\n            if soma_tamanho > 0:\r\n                quantidade_por_grupo[tamanho] = soma_tamanho\r\n\r\n    # Atribuir o valor total somado ao parâmetro \"Ocupação cabos\" do elemento\r\n    parametro_ocupacao = elemento.LookupParameter(\"Ocupação cabos\")\r\n    if parametro_ocupacao and parametro_ocupacao.AsDouble() != soma_total_multiplicada:\r\n        parametro_ocupacao.Set(soma_total_multiplicada)\r\n\r\n    # Construir a string para o parâmetro \"Descrição ocupação\" no formato solicitado com quantidade primeiro, ordenado por ordem_tamanhos\r\n    descricao_ocupacao = \"; \".join([\"{} x {}\".format(quantidade_por_grupo[tamanho], tamanho) for tamanho in ordem_tamanhos if tamanho in quantidade_por_grupo])\r\n\r\n    # Atribuir a string ao parâmetro \"Descrição ocupação\"\r\n    parametro_descricao = elemento.LookupParameter(\"Descrição ocupação\")\r\n    if parametro_descricao and parametro_descricao.AsString() != descricao_ocupacao:\r\n        parametro_descricao.Set(descricao_ocupacao)\r\n\r\n    # Atribuir o valor sequencial ao parâmetro \"Trecho\"\r\n    parametro_trecho = elemento.LookupParameter(\"Trecho\")\r\n    if parametro_trecho and parametro_trecho.AsInteger() != contador_trecho:\r\n        parametro_trecho.Set(contador_trecho)\r\n    \r\n    # Ordenar quantidade_por_grupo com base em ordem_tamanhos e adicionar apenas os grupos com valor maior que zero\r\n    quantidade_ordenada = {tamanho: quantidade_por_grupo[tamanho] for tamanho in ordem_tamanhos if tamanho in quantidade_por_grupo}\r\n\r\n    # Adicionar os dados do elemento atual na lista de saída\r\n    quantidade_por_elemento.append({\r\n        \"ElementoID\": elemento.Id.ToString(),\r\n        \"Trecho\": contador_trecho,\r\n        \"QuantidadePorGrupo\": quantidade_ordenada,\r\n        \"Descrição ocupação\": descricao_ocupacao\r\n    })\r\n    \r\n    # Incrementar o contador de trecho\r\n    contador_trecho += 1\r\n\r\n# Finalizando a transação\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Saída com a quantidade de cabos por grupo separada por elemento e organizada em ordem fixa, excluindo valores zero\r\nOUT = quantidade_por_elemento\r\n",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "65afcb617bb7400fbbb3c943d50d7ce8",
+      "Inputs": [
+        {
+          "Id": "23d39e2a8c36436eabc14744ce827ed5",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7043f4452a3343388482febe61b04d61",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
     }
   ],
   "Connectors": [],
@@ -194,7 +258,7 @@
         "IsSetAsOutput": false,
         "Name": "Python Script",
         "ShowGeometry": true,
-        "Excluded": false,
+        "Excluded": true,
         "X": 187.7753273859073,
         "Y": 785.51172326305914
       },
@@ -204,7 +268,7 @@
         "IsSetAsOutput": false,
         "Name": "Python Script",
         "ShowGeometry": true,
-        "Excluded": false,
+        "Excluded": true,
         "X": 391.09946511857311,
         "Y": 787.94449161060152
       },
@@ -227,6 +291,26 @@
         "Excluded": true,
         "X": 954.41056268359716,
         "Y": 808.48154721055118
+      },
+      {
+        "Id": "923e1837bd6c47a185d490e5d57c6eba",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 166.84375758022054,
+        "Y": 963.58308941644782
+      },
+      {
+        "Id": "65afcb617bb7400fbbb3c943d50d7ce8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 405.18638491989748,
+        "Y": 965.78102110657665
       }
     ],
     "Annotations": [
@@ -307,8 +391,8 @@
         "Background": "#FFC1D676"
       }
     ],
-    "X": 360.560040087528,
-    "Y": 0.73234391075504846,
-    "Zoom": 0.2937365920348044
+    "X": 25.403235238303296,
+    "Y": -429.07709644451035,
+    "Zoom": 0.87934964682419292
   }
 }
